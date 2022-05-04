@@ -1,28 +1,44 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <p>{{ stringSession }}</p>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import { TelegramClient } from 'telegram';
+import { StringSession } from 'telegram/sessions';
+
+const TL_API_ID = Number(process.env.VUE_APP_TL_API_ID);
+const TL_API_HASH = process.env.VUE_APP_TL_API_HASH;
 
 export default {
   name: 'App',
-  components: {
-    HelloWorld
-  }
+  data() {
+    return {
+      stringSession: null,
+    };
+  },
+  mounted() {
+    this.test();
+  },
+  methods: {
+    async test() {
+      const client = new TelegramClient(new StringSession(''), TL_API_ID, TL_API_HASH, { connectionRetries: 5 });
+      await client.start({
+        phoneNumber: async () => prompt('phone'),
+        password: async () => prompt('password'),
+        phoneCode: async () => prompt('code'),
+        onError: (err) => console.error(err),
+      });
+      await client.connect();
+
+      this.stringSession = client.session.save();
+
+      await client.sendMessage('me', { message: "test from me" });
+    },
+  },
 }
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
 </style>
