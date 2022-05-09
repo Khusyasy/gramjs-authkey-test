@@ -37,15 +37,16 @@ const mappedDC = {
 async function main() {
   const inputSession = await input.text('session:');
   const stringSession = new StringSession(inputSession);
-  const correctDC = mappedDC[stringSession.dcId];
-  stringSession.setDC(correctDC.id, correctDC.ipAddress, correctDC.port);
+  // const correctDC = mappedDC[stringSession.dcId];
+  // stringSession.setDC(correctDC.id, correctDC.ipAddress, correctDC.port);
 
   const client = new TelegramClient(stringSession, TL_API_ID, TL_API_HASH, { connectionRetries: 5 });
   await client.connect();
 
   console.log(client.session.save());
 
-  await client.sendMessage('me', { message: "test from me" });
+  await client.sendMessage('me', { message: "test from node" });
+  process.exit(0);
 }
 
 main();
